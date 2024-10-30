@@ -42,7 +42,7 @@ Persist the todo lists on the server. Persisting in a database is not required. 
 ### Additional tasks
 - [x] Don't require users to press save when an item is added/edited in the todo list. (Autosave functionality)
 - [x] Make it possible to indicate that a todo is completed.
-- [ ] Indicate that a todo list is completed if all todo items within are completed.
+- [X] Indicate that a todo list is completed if all todo items within are completed.
 - [ ] Add a date for completion to todo items. Indicate how much time is remaining or overdue.
 
 ## Submission
