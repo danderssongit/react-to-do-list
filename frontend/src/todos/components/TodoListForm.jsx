@@ -1,18 +1,23 @@
-import React from 'react'
 import { Card, CardContent, CardActions, Button, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { TodoItem } from './TodoItem'
 import { useTodos } from '../hooks/useTodos'
 
 export const TodoListForm = ({ todoList, saveTodoList }) => {
-  const { todos, addTodo, updateTodo, toggleTodo, deleteTodo } = useTodos(todoList.todos, (todos) =>
-    saveTodoList(todoList.id, { todos })
+  const { todos, addTodo, updateTodo, toggleTodo, deleteTodo, updateTodoDueDate } = useTodos(
+    todoList.todos,
+    (todos) => saveTodoList(todoList.id, { todos })
   )
 
   const handleSubmit = (event) => {
     if (event) {
       event.preventDefault()
     }
+    todos.forEach((todo, index) => {
+      if (todo.isEditing) {
+        updateTodo(index, todo.content, false)
+      }
+    })
   }
 
   const handleEnterPress = (event) => {
@@ -20,11 +25,6 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
       event.preventDefault()
       handleSubmit()
       addTodo()
-
-      setTimeout(() => {
-        const inputs = document.querySelectorAll('input[type="text"]')
-        inputs[inputs.length - 1]?.focus()
-      }, 0)
     }
   }
 
@@ -41,10 +41,13 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
               key={index}
               todo={todo}
               index={index}
-              onContentChange={(content) => updateTodo(index, content)}
+              isNew={index === todos.length - 1 && !todo.content}
+              isEditing={!todo.id || todo.isEditing}
+              onContentChange={(content) => updateTodo(index, content, true)}
               onToggle={() => toggleTodo(index)}
               onDelete={() => deleteTodo(index)}
               onKeyDown={handleEnterPress}
+              onDueDateChange={(dueDate) => updateTodoDueDate(index, dueDate)}
             />
           ))}
           <CardActions>
