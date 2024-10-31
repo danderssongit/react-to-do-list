@@ -13,6 +13,11 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
     if (event) {
       event.preventDefault()
     }
+    todos.forEach((todo, index) => {
+      if (todo.isEditing) {
+        updateTodo(index, todo.content, false)
+      }
+    })
   }
 
   const handleEnterPress = (event) => {
@@ -37,7 +42,8 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
               todo={todo}
               index={index}
               isNew={index === todos.length - 1 && !todo.content}
-              onContentChange={(content) => updateTodo(index, content)}
+              isEditing={!todo.id || todo.isEditing}
+              onContentChange={(content) => updateTodo(index, content, true)}
               onToggle={() => toggleTodo(index)}
               onDelete={() => deleteTodo(index)}
               onKeyDown={handleEnterPress}

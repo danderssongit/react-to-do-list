@@ -1,7 +1,7 @@
 import React from 'react'
 import { TextField, Checkbox, Typography, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { getInputLabel } from '../../utils/dateUtils'
+import { getInputLabel, formatDateForInput } from '../../utils/dateUtils'
 import { getInputStyle } from '../styles/todoStyles'
 
 export const TodoItem = ({
@@ -13,6 +13,7 @@ export const TodoItem = ({
   onKeyDown,
   onDueDateChange,
   isNew,
+  isEditing,
 }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
@@ -33,12 +34,12 @@ export const TodoItem = ({
         error={!isNew && todo.dueDate && new Date(todo.dueDate) < new Date() && !todo.completed}
       />
 
-      {isNew && (
+      {(isNew || isEditing) && (
         <TextField
           type='datetime-local'
           label='Due Date'
           style={{ alignSelf: 'end' }}
-          value={todo.dueDate ? todo.dueDate.slice(0, 16) : ''}
+          value={formatDateForInput(todo.dueDate)}
           onChange={(event) => {
             const newDate = event.target.value ? new Date(event.target.value).toISOString() : null
             onDueDateChange(newDate)

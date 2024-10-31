@@ -13,19 +13,17 @@ const areTodosEqual = (todos1, todos2) => {
   )
 }
 
-export const useTodos = (initialTodos, onSave) => {
-  const [todos, setTodos] = useState(initialTodos)
-  const [isDirty, setIsDirty] = useState(false)
+export const useTodos = (initialTodos = [], onChange) => {
+  const [todos, setTodos] = useState(
+    initialTodos.length > 0 ? initialTodos : [{ content: '', completed: false, isEditing: true }]
+  )
   const previousTodos = useRef(initialTodos)
 
   const debouncedSave = useDebounce((todos) => {
-    if (!isDirty) return
-
     const nonEmptyTodos = todos.filter((todo) => todo.content.trim())
     if (!areTodosEqual(nonEmptyTodos, previousTodos.current)) {
-      onSave(nonEmptyTodos)
+      onChange(nonEmptyTodos)
       previousTodos.current = nonEmptyTodos
-      setIsDirty(false)
     }
   }, 400)
 
@@ -34,41 +32,43 @@ export const useTodos = (initialTodos, onSave) => {
   }, [todos])
 
   const addTodo = () => {
-    setTodos([
+    setTodos((todos) => [
       ...todos,
       {
         content: '',
         completed: false,
-        dueDate: null, // explicitly initialize dueDate
+        dueDate: null,
+        isEditing: true,
       },
     ])
   }
 
-  const updateTodo = (index, content) => {
-    setTodos([...todos.slice(0, index), { ...todos[index], content }, ...todos.slice(index + 1)])
-    setIsDirty(true)
+  const updateTodo = (index, content, isEditing = true) => {
+    setTodos((todos) =>
+      todos.map((todo, i) => (i === index ? { ...todo, content, isEditing } : todo))
+    )
   }
 
   const toggleTodo = (index) => {
-    const newTodos = [...todos]
-    const isCompleting = !newTodos[index].completed
-    newTodos[index] = {
-      ...newTodos[index],
-      completed: isCompleting,
-      completedAt: isCompleting ? new Date().toISOString() : null,
-    }
-    setTodos(newTodos)
-    setIsDirty(true)
+    setTodos((todos) =>
+      todos.map((todo, i) => {
+        if (i !== index) return todo
+        const isCompleting = !todo.completed
+        return {
+          ...todo,
+          completed: isCompleting,
+          completedAt: isCompleting ? new Date().toISOString() : null,
+        }
+      })
+    )
   }
 
   const deleteTodo = (index) => {
-    setTodos([...todos.slice(0, index), ...todos.slice(index + 1)])
-    setIsDirty(true)
+    setTodos((todos) => todos.filter((_, i) => i !== index))
   }
 
   const updateTodoDueDate = (index, dueDate) => {
-    setTodos([...todos.slice(0, index), { ...todos[index], dueDate }, ...todos.slice(index + 1)])
-    setIsDirty(true)
+    setTodos((todos) => todos.map((todo, i) => (i === index ? { ...todo, dueDate } : todo)))
   }
 
   return {

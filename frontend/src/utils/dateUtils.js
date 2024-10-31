@@ -36,10 +36,37 @@ const formatDate = (date) => {
   })
 }
 
-export const getInputLabel = (todo, isNew) => {
-  if (isNew) return 'What to do?'
-  if (!todo.dueDate) return 'No due date set'
-  if (todo.completed) return `Completed ${formatDate(todo.completedAt)}`
+export const formatDateForInput = (isoString) => {
+  if (!isoString) return ''
+  const date = new Date(isoString)
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+}
 
-  return formatTimeRemaining(todo.dueDate)
+const getDueStatus = (dueDate) => {
+  if (!dueDate) return null
+
+  const due = new Date(dueDate)
+  const now = new Date()
+  const diffMs = due - now
+
+  if (diffMs < 0) return 'Overdue'
+
+  const hours = Math.ceil(diffMs / (1000 * 60 * 60))
+  const days = Math.ceil(hours / 24)
+
+  if (days > 1) return `Due in ${days} days`
+  if (hours > 1) return `Due in ${hours} hours`
+  return `Due in ${Math.ceil(diffMs / (1000 * 60))} minutes`
+}
+
+const getCompletedStatus = (completedAt) => {
+  const date = new Date(completedAt)
+  return `Completed ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+}
+
+export const getInputLabel = (todo, isNew) => {
+  if (isNew) return 'New Todo'
+  if (todo.completed) return getCompletedStatus(todo.completedAt)
+  if (todo.dueDate) return getDueStatus(todo.dueDate)
+  return 'Todo'
 }
