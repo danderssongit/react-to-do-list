@@ -49,7 +49,14 @@ const getDueStatus = (dueDate) => {
   const now = new Date()
   const diffMs = due - now
 
-  if (diffMs < 0) return 'Overdue'
+  if (diffMs < 0) {
+    const hours = Math.ceil(Math.abs(diffMs) / (1000 * 60 * 60))
+    const days = Math.ceil(hours / 24)
+
+    if (days > 1) return `Overdue by ${days} days`
+    if (hours > 1) return `Overdue by ${hours} hours`
+    return `Overdue by ${Math.ceil(Math.abs(diffMs) / (1000 * 60))} minutes`
+  }
 
   const hours = Math.ceil(diffMs / (1000 * 60 * 60))
   const days = Math.ceil(hours / 24)
