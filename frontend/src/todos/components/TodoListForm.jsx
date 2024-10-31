@@ -1,11 +1,9 @@
-import React, { useRef } from 'react'
 import { Card, CardContent, CardActions, Button, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { TodoItem } from './TodoItem'
 import { useTodos } from '../hooks/useTodos'
 
 export const TodoListForm = ({ todoList, saveTodoList }) => {
-  const newInputRef = useRef(null)
   const { todos, addTodo, updateTodo, toggleTodo, deleteTodo, updateTodoDueDate } = useTodos(
     todoList.todos,
     (todos) => saveTodoList(todoList.id, { todos })
@@ -38,7 +36,7 @@ export const TodoListForm = ({ todoList, saveTodoList }) => {
               key={index}
               todo={todo}
               index={index}
-              ref={index === todos.length - 1 ? newInputRef : null}
+              isNew={index === todos.length - 1 && !todo.content}
               onContentChange={(content) => updateTodo(index, content)}
               onToggle={() => toggleTodo(index)}
               onDelete={() => deleteTodo(index)}
