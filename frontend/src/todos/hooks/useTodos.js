@@ -29,7 +29,7 @@ export const useTodos = (initialTodos = [], onChange) => {
 
   useEffect(() => {
     debouncedSave(todos)
-  }, [todos])
+  }, [todos, debouncedSave])
 
   const addTodo = () => {
     setTodos((todos) => [
